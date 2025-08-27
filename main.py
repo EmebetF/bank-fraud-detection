@@ -12,6 +12,11 @@ from src.features.eda_report import EDAReport
 # Task 2
 from src.models.model_trainer import ModelTrainer
 
+# Task 3
+from models.explainability.shap_explainer import SHAPExplainer
+from models.explainability.evaluation_report import EvaluationReport
+from models.ensemble_model import EnsembleModel
+
 
 class PipelineRunner:
     """
@@ -57,13 +62,23 @@ class PipelineRunner:
         eda = EDAReport(fraud_features)
         target_summary = eda.target_summary()
 
-        # Optionally, save final dataset
+        # Save final dataset
         final_path = self.processed_dir / "fraud_features_final.csv"
         fraud_features.to_csv(final_path, index=False)
         
         # Task 2
         model_trainer = ModelTrainer(fraud_df)
         results = model_trainer.train_models()
+        
+        
+    # Task 3
+        explainer = SHAPExplainer(ensemble_model.model, ensemble_model.X_train)
+        explainer.global_feature_importance()
+        explainer.local_explanation(ensemble_model.X_test, sample_index=0)
+
+        evaluator = EvaluationReport(ensemble_model.model, ensemble_model.X_test, ensemble_model.y_test)
+        evaluator.plot_confusion_matrix()
+        evaluator.pr_auc_curve()
 
         return fraud_features,results
 
