@@ -1,11 +1,16 @@
 from pathlib import Path
 import pandas as pd
 
+# Task 1
+
 # Import your previously defined classes
 from src.data.fraud_data_processor import FraudDataProcessor
 from src.features.ip_country_mapper import IPCountryMapper
 from src.features.feature_engineer import FeatureEngineer
 from src.features.eda_report import EDAReport
+
+# Task 2
+from src.models.model_trainer import ModelTrainer
 
 
 class PipelineRunner:
@@ -55,8 +60,12 @@ class PipelineRunner:
         # Optionally, save final dataset
         final_path = self.processed_dir / "fraud_features_final.csv"
         fraud_features.to_csv(final_path, index=False)
+        
+        # Task 2
+        model_trainer = ModelTrainer(fraud_df)
+        results = model_trainer.train_models()
 
-        return fraud_features
+        return fraud_features,results
 
 
 if __name__ == "__main__":
